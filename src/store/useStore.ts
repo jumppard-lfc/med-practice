@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Patient, Appointment, Prescription, Doctor, PageSections } from '../types';
+import { supabase } from '../lib/supabase'; // Init supabase client
 
 const DEFAULT_PAGE_SECTIONS: PageSections = {
   order: ['info', 'banner', 'services'],
@@ -64,6 +65,19 @@ interface Store {
 }
 
 // Initial doctors data
+const fetchInitialDoctors = async (): Promise<Doctor[]> => {
+  const { data, error } = await supabase.from('Doctor').select('*'); // Fetch doctors from Supabase
+  if (error) {
+    console.error('Error fetching doctors:', error);
+    return []; // Return an empty array in case of error
+  }
+  return data; // Return the fetched data
+};
+
+const initialDoctors = await fetchInitialDoctors();
+
+/*
+// Initial doctors data
 const initialDoctors: Doctor[] = [
   {
     id: '1',
@@ -86,6 +100,7 @@ const initialDoctors: Doctor[] = [
     page_sections: DEFAULT_PAGE_SECTIONS,
   },
 ];
+*/
 
 export const useStore = create<Store>((set) => ({
   doctor: null,
